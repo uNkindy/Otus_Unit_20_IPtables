@@ -1,5 +1,5 @@
 ### Домашнее задание №20 (iptables)
-Собрана часть стенда из домашнего задания №19 (IP). Для стенда используются следующие виртуальные машины (ВМ): inetRouter, centalRouter, centralServer. Дополнительно создана ВМ inetRouter2, с проброшенным c хоста портом 8080.
+За основу взят стенд из ДЗ №18 (IP). Используются следующие виртуальные машины (ВМ): inetRouter, centalRouter, centralServer. Дополнительно создана ВМ inetRouter2.
 #### 1. Реализация knocking port:
 - на ВМ inetRouter устанавливаются пакеты iptables, iptables-services.
 - на ВМ inetRouter пишется правило для реализации [knocking port]();

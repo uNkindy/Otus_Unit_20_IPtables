@@ -1,4 +1,93 @@
 ---
-name: 
-gather_facts: False
-become: True
+- name: Enable forwarding packets on routers
+  hosts: Routers
+  become: True
+  gather_facts: false
+  tasks:
+    - name: Enable forwarding
+      shell: echo "net.ipv4.conf.all.forwarding=1" >> /etc/sysctl.conf
+
+- name: Install traceroute on all VMs
+  hosts: all
+  become: True
+  gather_facts: false
+  tasks:
+    - name: Install traceroute
+      yum:
+        name: traceroute
+        state: latest
+
+- name: Add default route on Office1Server
+  hosts: office1Server
+  become: True
+  gather_facts: false
+  tasks:
+    - name: Add default route
+      shell: echo "default via 192.168.2.1 dev eth1" > /etc/sysconfig/network-scripts/route-eth1
+
+- name: Add default route on Office2Server
+  hosts: office2Server
+  become: True
+  gather_facts: false
+  tasks:
+    - name: Add default route
+      shell: echo "default via 192.168.1.1 dev eth1" > /etc/sysconfig/network-scripts/route-eth1
+
+- name: Add default route on centralServer
+  hosts: centralServer
+  become: True
+  gather_facts: false
+  tasks:
+    - name: Add default route
+      shell: echo "default via 192.168.0.81 dev eth1" > /etc/sysconfig/network-scripts/route-eth1
+
+- name: Add default route on office1Router
+  hosts: office1Router
+  become: True
+  gather_facts: false
+  tasks:
+    - name: Add route
+      shell: echo "default via 192.168.255.5 dev eth1" > /etc/sysconfig/network-scripts/route-eth1
+
+- name: Add default route on office2Router
+  hosts: office2Router
+  become: True
+  gather_facts: false
+  tasks:
+    - name: Add route
+      shell: echo "default via 192.168.255.10 dev eth1" > /etc/sysconfig/network-scripts/route-eth1
+
+- name: Add routes on centralRouter
+  hosts: centralRouter
+  become: True
+  gather_facts: false
+  tasks:
+    - name: Add routes
+      shell: echo "default via 192.168.255.1 dev eth1" > /etc/sysconfig/network-scripts/route-eth1
+      shell: echo "192.168.2.0/24 via 192.168.255.6 dev eth5" > /etc/sysconfig/network-scripts/route-eth5
+    - name: Route 2
+      shell: echo "192.168.1.0/24 via 192.168.255.9 dev eth6" > /etc/sysconfig/network-scripts/route-eth6
+
+- name: Add routes on inetRouter
+  hosts: inetRouter
+  become: True
+  gather_facts: false
+  tasks:
+    - name: Add routes
+      shell: echo "192.168.0.0/16 via 192.168.255.2 dev eth1" > /etc/sysconfig/network-scripts/route-eth1
+
+
+- name: Reboot network on all VMs first time
+  hosts: all
+  become: True
+  gather_facts: false
+  tasks:  
+    - name: Reboot first time
+      service:
+        name: network
+        state: restarted
+
+    - name: Reboot second time
+      service:
+        name: network
+        state: restarted
