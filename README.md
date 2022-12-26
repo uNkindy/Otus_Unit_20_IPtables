@@ -55,6 +55,10 @@ Last login: Thu Dec 22 14:35:14 2022 from 192.168.56.240
 #### Реализация проброса порта при помощи iptables:
 - на ВМ centralRouter поднят nginx;
 - на ВМ inetRouter прописан прерутинг пакетов на ВМ centralRouter, также в построутинге прописан маскарад;
+```console
+[root@inetRouter2 vagrant]# iptables -t nat -A PREROUTING -i eth2 -p tcp --dport 8080 -j DNAT --to-destination 192.168.255.13 
+[root@inetRouter2 vagrant]# iptables -t nat -A POSTROUTING -s 192.168.56.0/24 -d 0/0 -j MASQUERADE
+```
 - командой curl проверим проброс порта с хостовой машины до centralRouting:
 ```console
 [root@devops Otus_Unit_20_IPtables]# curl 192.168.56.100:80
