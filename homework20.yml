@@ -83,6 +83,10 @@
   tags: 
     - iptables
   tasks:
+    - name: Enable Routing
+      shell: sysctl net.ipv4.conf.all.forwarding=1
+      ignore_errors: true
+      
     - name: Configure PREROUTING
       shell: iptables -t nat -A PREROUTING -i eth2 -p tcp --dport 8080 -j DNAT --to-destination 192.168.255.13:80
       ignore_errors: true
