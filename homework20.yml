@@ -1,0 +1,98 @@
+---
+- name: Install packets and files on inetRouters
+  become: true
+  gather_facts: false
+  hosts: inetRouter
+  tasks:
+    - name: Install iptables and iptables-services
+      yum:
+        name:
+          - iptables
+          - iptables-services
+        state: latest
+
+    - name: Copy iptables.rule to VM
+      template:
+        src: templates/iptables.rule.j2
+        dest: /root/iptables.rule
+
+    - name: Copy sshd_config
+      template:
+        src: templates/sshd_config.j2
+        dest: /etc/ssh/sshd_config
+
+    - name: Sshd service restart
+      systemd:
+        name: sshd
+        state: restarted
+
+    
+    - name: Start iptables
+      systemd:
+        name: iptables
+        enabled: true
+        state: started
+    
+    - name: Add rules in chain
+      shell: iptables-restore < /root/iptables.rule
+
+    - name: Save iptables rules
+      shell: service iptables save
+
+- name: Configuring centralRouter
+  become: true
+  gather_facts: false
+  hosts: centralRouter
+  tags: 
+    - tag
+  tasks:
+    - name: Install nmap 
+      yum:
+        name: 
+          - nmap
+        state: latest
+
+    - name: Copy knock.sh
+      template:
+        src: templates/knock.sh.j2
+        dest: /root/knock.sh
+        mode: '0777'
+
+    - name: Install epel-release
+      yum: 
+        name: epel-release
+        state: present
+     
+    - name: Install nginx
+      yum:
+        name: nginx
+        state: latest
+
+    - name: Nginx start
+      systemd:
+        name: nginx
+        state: started
+
+    - name: Route to host
+      shell: ip route add 192.168.56.0/24 via 192.168.255.13
+        
+# - name: Redirect on centralRouter
+#   hosts: inetRouter2
+#   become: true
+#   tags:
+#     - rou
+#   tasks:
+#     - name: Forward port 8080 to 80
+#       iptables:
+#         table: nat
+#         chain: PREROUTING
+#         in_interface: eth1
+#         protocol: tcp
+#         match: tcp
+#         destination_port: "8080"
+#         jump: DNAT
+#         to_destination: "192.168.255.13:80"
+
+#         comment: Redirect web traffic to centralRouter
+#       become: yes
+    

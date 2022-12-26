@@ -1,5 +1,5 @@
 ### Домашнее задание №20 (iptables)
-За основу взят стенд из ДЗ №18 (IP). Используются следующие виртуальные машины (ВМ): inetRouter, centalRouter, centralServer. Дополнительно создана ВМ inetRouter2.
+За основу взят стенд из ДЗ №18 (IP). Используются следующие виртуальные машины (ВМ): inetRouter, centalRouter, centralServer. Дополнительно создана ВМ inetRouter2 (192.168.255.13).
 #### 1. Реализация knocking port:
 - на ВМ inetRouter устанавливаются пакеты iptables, iptables-services.
 - на ВМ inetRouter пишется правило для реализации [knocking port]();
@@ -52,5 +52,27 @@ root@192.168.56.241's password:
 Last login: Thu Dec 22 14:35:14 2022 from 192.168.56.240
 [root@inetRouter ~]# 
 ```
+#### Реализация проброса порта при помощи iptables:
+- на ВМ centralRouter поднят nginx;
+- на ВМ inetRouter прописан прерутинг пакетов на ВМ centralRouter, также в построутинге прописан маскарад;
+- командой curl проверим проброс порта с хостовой машины до centralRouting:
+```console
+[root@devops Otus_Unit_20_IPtables]# curl 192.168.56.100:80
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+  <title>Welcome to CentOS</title>
+  <style rel="stylesheet" type="text/css"> 
+
+        html {
+        background-image:url(img/html-background.png);
+        background-color: white;
+        font-family: "DejaVu Sans", "Liberation Sans", sans-serif;
+        font-size: 0.85em;
+        line-height: 1.25em;
+        margin: 0 4% 0 4%;
+        }
+```
 ___
+
 #### Для подготовки стенда написан [playbook]().
